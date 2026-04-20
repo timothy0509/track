@@ -1,0 +1,13 @@
+{
+  "buildCommand": "vinxi build",
+  "outputDirectory": ".output",
+  "devCommand": "vinxi dev",
+  "installCommand": "npm install",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
