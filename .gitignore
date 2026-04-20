@@ -46,4 +46,4 @@ yarn-error.log*
 .idea
 
 .opencode/
-# package-lock.json
+package-lock.json
