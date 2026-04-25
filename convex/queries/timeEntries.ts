@@ -2,7 +2,6 @@
 
 import { query } from "../_generated/server";
 import { v } from "convex/values";
-import { Id } from "../_generated/dataModel";
 import { getCurrentUserId } from "../lib/auth";
 
 async function enrichEntry(ctx: any, entry: any) {
@@ -63,44 +62,47 @@ export const list = query({
 
     if (!user) return { entries: [], hasMore: false };
 
-    let q = ctx.db
-      .query("timeEntries")
-      .withIndex("byWorkspace", (q) => q.eq("workspaceId", args.workspaceId));
+    const { startDate, endDate, projectId, taskId, tagIds } = args;
 
-    if (args.startDate !== undefined) {
-      q = q.withIndex("byWorkspaceAndDate", (q) =>
-        q.eq("workspaceId", args.workspaceId).gte("startTime", args.startDate!)
-      );
+    const entries =
+      startDate !== undefined
+        ? await ctx.db
+            .query("timeEntries")
+            .withIndex("byWorkspaceAndDate", (q) =>
+              q.eq("workspaceId", args.workspaceId).gte("startTime", startDate)
+            )
+            .collect()
+        : await ctx.db
+            .query("timeEntries")
+            .withIndex("byWorkspace", (q) => q.eq("workspaceId", args.workspaceId))
+            .collect();
+
+    let filteredEntries = entries.filter((e) => e.userId === user._id);
+
+    if (endDate !== undefined) {
+      filteredEntries = filteredEntries.filter((e) => e.startTime <= endDate);
     }
 
-    let entries = await q.collect();
-
-    entries = entries.filter((e) => e.userId === user._id);
-
-    if (args.endDate !== undefined) {
-      entries = entries.filter((e) => e.startTime <= args.endDate!);
+    if (projectId !== undefined) {
+      filteredEntries = filteredEntries.filter((e) => e.projectId === projectId);
     }
 
-    if (args.projectId !== undefined) {
-      entries = entries.filter((e) => e.projectId === args.projectId);
+    if (taskId !== undefined) {
+      filteredEntries = filteredEntries.filter((e) => e.taskId === taskId);
     }
 
-    if (args.taskId !== undefined) {
-      entries = entries.filter((e) => e.taskId === args.taskId);
+    if (tagIds !== undefined && tagIds.length > 0) {
+      filteredEntries = filteredEntries.filter((e) => {
+        const entryTagIds = e.tagIds;
+        return entryTagIds !== undefined && tagIds.some((tagId) => entryTagIds.includes(tagId));
+      });
     }
 
-    if (args.tagIds !== undefined && args.tagIds.length > 0) {
-      entries = entries.filter(
-        (e) =>
-          e.tagIds && args.tagIds!.some((tagId) => e.tagIds!.includes(tagId))
-      );
-    }
-
-    entries.sort((a, b) => b.startTime - a.startTime);
+    filteredEntries.sort((a, b) => b.startTime - a.startTime);
 
     const limit = args.limit ?? 50;
     const cursor = args.cursor ?? 0;
-    const sliced = entries.slice(cursor, cursor + limit);
+    const sliced = filteredEntries.slice(cursor, cursor + limit);
 
     const enriched = [];
     for (const entry of sliced) {
@@ -109,8 +111,9 @@ export const list = query({
 
     return {
       entries: enriched,
-      hasMore: cursor + limit < entries.length,
-      nextCursor: cursor + limit < entries.length ? cursor + limit : undefined,
+      hasMore: cursor + limit < filteredEntries.length,
+      nextCursor:
+        cursor + limit < filteredEntries.length ? cursor + limit : undefined,
     };
   },
 });
@@ -141,7 +144,7 @@ export const getRunning = query({
   args: {
     workspaceId: v.id("workspaces"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const authId = await getCurrentUserId(ctx);
     if (!authId) return null;
 

@@ -115,6 +115,7 @@ export function ProjectForm({ open, onOpenChange, workspaceId, project, clients 
       } else {
         await createProject({
           ...baseArgs,
+          isTemplate: false,
         });
       }
       onOpenChange(false);

@@ -1,32 +1,37 @@
 "use convex";
 
-import { Id } from "../_generated/dataModel";
+import type { Doc } from "../_generated/dataModel";
+import type { ActionCtx, MutationCtx, QueryCtx } from "../_generated/server";
 
-export async function requireAuth(ctx: any): Promise<string> {
+type AuthCtx =
+  | Pick<QueryCtx, "auth">
+  | Pick<MutationCtx, "auth">
+  | Pick<ActionCtx, "auth">;
+type DbCtx = QueryCtx | MutationCtx;
+
+export async function requireAuth(ctx: AuthCtx): Promise<string> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     throw new Error("Not authenticated");
   }
-  return identity.subject;
+  return identity.tokenIdentifier;
 }
 
-export async function getCurrentUserId(ctx: any): Promise<string | null> {
+export async function getCurrentUserId(ctx: AuthCtx): Promise<string | null> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     return null;
   }
-  return identity.subject;
+  return identity.tokenIdentifier;
 }
 
-export async function requireUser(
-  ctx: any
-): Promise<{ _id: Id<"users">; email: string; name: string; authId: string }> {
+export async function requireUser(ctx: DbCtx): Promise<Doc<"users">> {
   const authId = await requireAuth(ctx);
 
   const user = await ctx.db
     .query("users")
     .withIndex("byAuthId", (q) => q.eq("authId", authId))
-    .first();
+    .unique();
 
   if (!user) {
     throw new Error("User not found in database");

@@ -352,3 +352,65 @@ export const unshare = mutation({
     return { success: true };
   },
 });
+
+export const importFromCalendar = mutation({
+  args: {
+    workspaceId: v.id("workspaces"),
+    events: v.array(
+      v.object({
+        title: v.optional(v.string()),
+        description: v.optional(v.string()),
+        startTime: v.number(),
+        endTime: v.number(),
+        source: v.string(),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+
+    const membership = await ctx.db
+      .query("workspaceMembers")
+      .withIndex("byWorkspaceAndUser", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", user._id)
+      )
+      .unique();
+
+    if (!membership || membership.status !== "active") {
+      throw new Error("User is not an active member of this workspace");
+    }
+
+    const imported: Array<{
+      entryId: Id<"timeEntries">;
+      event: {
+        title?: string;
+        description?: string;
+        startTime: number;
+        endTime: number;
+        source: string;
+      };
+    }> = [];
+
+    for (const event of args.events) {
+      const entryId = await ctx.db.insert("timeEntries", {
+        workspaceId: args.workspaceId,
+        userId: user._id,
+        description: event.title ?? event.description,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        duration: event.endTime - event.startTime,
+        isRunning: false,
+        billable: false,
+        isFavorite: false,
+        source: "calendar",
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+
+      imported.push({ entryId, event });
+    }
+
+    return { imported, count: imported.length };
+  },
+});

@@ -45,8 +45,9 @@ function SharedPage() {
   const workspaceId = "j5793xqk4z8w5q06m40k77q9v70g3j6e" as Id<"workspaces">;
   const [activeTab, setActiveTab] = useState("with-me");
 
-  const sharedWithMe = useQuery(api.queries.timeEntries.getShared, { workspaceId }) ?? [];
-  const sharedByMe: any[] = [];
+  const shared = useQuery(api.queries.timeEntries.getShared, { workspaceId });
+  const sharedWithMe = shared?.sharedWithMe ?? [];
+  const sharedByMe = shared?.sharedByMe ?? [];
   const acceptShare = useMutation(api.mutations.timeEntries.acceptShare);
 
   const handleAccept = async (entryId: Id<"timeEntries">) => {

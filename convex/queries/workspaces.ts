@@ -2,7 +2,7 @@
 
 import { query } from "../_generated/server";
 import { v } from "convex/values";
-import { getCurrentUserId, requireUser } from "../lib/auth";
+import { getCurrentUserId } from "../lib/auth";
 
 export const list = query({
   handler: async (ctx) => {

@@ -36,7 +36,7 @@ export function IntegrationSettings({ workspaceId }: IntegrationSettingsProps) {
   const googleIntegration = integrations.find((i: any) => i.type === "googleCalendar");
   const outlookIntegration = integrations.find((i: any) => i.type === "outlookCalendar");
 
-  const disconnectIntegration = useMutation(api.mutations.integrations.deleteIntegration);
+  const disconnectIntegration = useMutation(api.mutations.integrations.disconnect);
 
   const handleDisconnect = async (integrationId: Id<"integrations">) => {
     await disconnectIntegration({ integrationId });

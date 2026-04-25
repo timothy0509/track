@@ -9,8 +9,8 @@ export const login = mutation({
   handler: async (ctx, args) => {
     const existingUser = await ctx.db
       .query("users")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
-      .first();
+      .withIndex("byEmail", (q) => q.eq("email", args.email))
+      .unique();
 
     if (!existingUser) {
       throw new Error("User not found");
@@ -33,17 +33,32 @@ export const signup = mutation({
   handler: async (ctx, args) => {
     const existingUser = await ctx.db
       .query("users")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
-      .first();
+      .withIndex("byEmail", (q) => q.eq("email", args.email))
+      .unique();
 
     if (existingUser) {
       throw new Error("User already exists");
     }
 
     const userId = await ctx.db.insert("users", {
+      authId: `legacy:${args.email}`,
       email: args.email,
+      emailVerified: false,
       name: args.name,
+      timezone: "UTC",
+      weekStart: "monday",
+      dateFormat: "YYYY-MM-DD",
+      timeFormat: "24h",
+      currency: "USD",
+      defaultBillable: false,
+      emailNotifications: {
+        projectAdded: true,
+        teamReminders: true,
+        reportScheduled: true,
+        budgetAlerts: true,
+      },
       createdAt: Date.now(),
+      updatedAt: Date.now(),
     });
 
     return {

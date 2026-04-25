@@ -1,9 +1,11 @@
 "use convex";
 
-import { Id } from "../_generated/dataModel";
+import type { Id } from "../_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "../_generated/server";
 
 type Role = "admin" | "projectManager" | "user";
 type WhoCanCreateProjects = "admin" | "projectManager" | "everyone";
+type DbCtx = QueryCtx | MutationCtx;
 
 export function isAdmin(role: Role): boolean {
   return role === "admin";
@@ -31,7 +33,7 @@ export function canDeleteWorkspace(role: Role): boolean {
 }
 
 export async function getCurrentUser(
-  ctx: any,
+  ctx: DbCtx,
   userId: string | null
 ): Promise<{ _id: Id<"users">; email: string; name: string } | null> {
   if (!userId) return null;
@@ -39,13 +41,13 @@ export async function getCurrentUser(
   const user = await ctx.db
     .query("users")
     .withIndex("byAuthId", (q) => q.eq("authId", userId))
-    .first();
+    .unique();
 
   return user;
 }
 
 export async function checkPermission(
-  ctx: any,
+  ctx: DbCtx,
   workspaceId: Id<"workspaces">,
   userId: string | null,
   requiredRole: Role
@@ -60,7 +62,7 @@ export async function checkPermission(
     .withIndex("byWorkspaceAndUser", (q) =>
       q.eq("workspaceId", workspaceId).eq("userId", user._id)
     )
-    .first();
+    .unique();
 
   if (!member || member.status !== "active") return false;
 
@@ -74,7 +76,7 @@ export async function checkPermission(
 }
 
 export async function getMemberRole(
-  ctx: any,
+  ctx: DbCtx,
   workspaceId: Id<"workspaces">,
   userId: string | null
 ): Promise<Role | null> {
@@ -88,7 +90,7 @@ export async function getMemberRole(
     .withIndex("byWorkspaceAndUser", (q) =>
       q.eq("workspaceId", workspaceId).eq("userId", user._id)
     )
-    .first();
+    .unique();
 
   if (!member || member.status !== "active") return null;
 

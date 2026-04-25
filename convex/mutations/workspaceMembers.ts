@@ -2,7 +2,7 @@
 
 import { mutation } from "../_generated/server";
 import { v } from "convex/values";
-import { requireUser, getCurrentUserId } from "../lib/auth";
+import { requireUser } from "../lib/auth";
 import { checkPermission } from "../lib/permissions";
 
 export const invite = mutation({

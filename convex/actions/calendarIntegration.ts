@@ -1,8 +1,9 @@
 "use node";
 
 import { action } from "../_generated/server";
+import { api, internal } from "../_generated/api";
 import { v } from "convex/values";
-import { Id } from "../_generated/dataModel";
+import type { Id } from "../_generated/dataModel";
 
 export const syncGoogleCalendar = action({
   args: {
@@ -12,8 +13,15 @@ export const syncGoogleCalendar = action({
     endDate: v.number(),
   },
   handler: async (ctx, args) => {
-    const integration = await ctx.db.get(args.integrationId);
-    if (!integration || integration.type !== "googleCalendar") {
+    const integration = await ctx.runQuery(
+      internal.queries.integrations.getForSync,
+      {
+        workspaceId: args.workspaceId,
+        integrationId: args.integrationId,
+      }
+    );
+
+    if (integration.type !== "googleCalendar") {
       throw new Error("Google Calendar integration not found");
     }
 
@@ -31,7 +39,7 @@ export const syncGoogleCalendar = action({
       throw new Error(`Google Calendar API error: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as { items?: unknown[] };
     return data.items ?? [];
   },
 });
@@ -44,8 +52,15 @@ export const syncOutlookCalendar = action({
     endDate: v.number(),
   },
   handler: async (ctx, args) => {
-    const integration = await ctx.db.get(args.integrationId);
-    if (!integration || integration.type !== "outlookCalendar") {
+    const integration = await ctx.runQuery(
+      internal.queries.integrations.getForSync,
+      {
+        workspaceId: args.workspaceId,
+        integrationId: args.integrationId,
+      }
+    );
+
+    if (integration.type !== "outlookCalendar") {
       throw new Error("Outlook Calendar integration not found");
     }
 
@@ -63,7 +78,7 @@ export const syncOutlookCalendar = action({
       throw new Error(`Outlook Calendar API error: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as { value?: unknown[] };
     return data.value ?? [];
   },
 });
@@ -81,43 +96,25 @@ export const importEvents = action({
       })
     ),
   },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byAuthId", (q) => q.eq("authId", identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    const imported = [];
-
-    for (const event of args.events) {
-      const entryId = await ctx.db.insert("timeEntries", {
-        workspaceId: args.workspaceId,
-        userId: user._id,
-        description: event.title ?? event.description,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        duration: event.endTime - event.startTime,
-        isRunning: false,
-        billable: false,
-        isFavorite: false,
-        source: "calendar",
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
-
-      imported.push({ entryId, event });
-    }
-
-    return { imported, count: imported.length };
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    imported: Array<{
+      entryId: Id<"timeEntries">;
+      event: {
+        title?: string;
+        description?: string;
+        startTime: number;
+        endTime: number;
+        source: string;
+      };
+    }>;
+    count: number;
+  }> => {
+    return await ctx.runMutation(api.mutations.timeEntries.importFromCalendar, {
+      workspaceId: args.workspaceId,
+      events: args.events,
+    });
   },
 });
