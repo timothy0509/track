@@ -20,6 +20,7 @@ next-env.d.ts
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -38,6 +39,9 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# tanstack start
+.tanstack/
 
 # typescript
 *.tsbuildinfo
