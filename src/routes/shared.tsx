@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { createRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
-import { rootRoute } from "./__root";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,9 +37,7 @@ function formatDate(timestamp: number): string {
   });
 }
 
-export const sharedRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "shared",
+export const Route = createFileRoute("/shared")({
   component: SharedPage,
 });
 

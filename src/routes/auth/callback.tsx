@@ -1,9 +1,6 @@
-import { createRoute, redirect } from "@tanstack/react-router";
-import { rootRoute } from "@/routes/__root";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const authCallbackRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "auth/callback",
+export const Route = createFileRoute("/auth/callback")({
   beforeLoad: () => {
     throw redirect({ to: "/timer" });
   },

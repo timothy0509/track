@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { createRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
-import { rootRoute } from "../__root";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { EntryCalendar } from "@/components/entries/EntryCalendar";
 import { Button } from "@/components/ui/button";
 import { Calendar, List } from "lucide-react";
 
-export const timerCalendarRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "calendar",
+export const Route = createFileRoute("/timer/calendar")({
   component: CalendarPage,
 });
 

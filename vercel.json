@@ -1,7 +1,7 @@
 {
-  "buildCommand": "vinxi build",
-  "outputDirectory": ".output",
-  "devCommand": "vinxi dev",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/client",
+  "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": null,
   "rewrites": [

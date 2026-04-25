@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { createRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
-import { rootRoute } from "./__root";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ManualEntryForm } from "@/components/timer/ManualEntryForm";
 import { Button } from "@/components/ui/button";
@@ -70,9 +69,7 @@ function formatDate(timestamp: number): string {
   });
 }
 
-export const entriesRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "entries",
+export const Route = createFileRoute("/entries")({
   component: EntriesPage,
 });
 

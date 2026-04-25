@@ -1,9 +1,6 @@
-import { createRoute, redirect } from "@tanstack/react-router";
-import { rootRoute } from "./__root";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/",
+export const Route = createFileRoute("/")({
   beforeLoad: () => {
     throw redirect({ to: "/timer" });
   },

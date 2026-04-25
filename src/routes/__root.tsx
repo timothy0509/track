@@ -7,8 +7,6 @@ export const Route = createRootRoute({
   component: RootComponent,
 });
 
-export const rootRoute = Route;
-
 function RootComponent() {
   return (
     <html lang="en">

@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { createRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
-import { rootRoute } from "./__root";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { TimerInput } from "@/components/timer/TimerInput";
 import { ManualEntryForm } from "@/components/timer/ManualEntryForm";
@@ -39,9 +38,7 @@ function formatTime(timestamp: number): string {
   });
 }
 
-export const timerRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "timer",
+export const Route = createFileRoute("/timer")({
   component: TimerPage,
 });
 

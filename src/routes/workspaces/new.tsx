@@ -1,6 +1,5 @@
 import * as React from "react";
-import { createRoute, useNavigate } from "@tanstack/react-router";
-import { rootRoute } from "../__root";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,9 +20,7 @@ function generateSlug(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
-export const workspacesNewRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/workspaces/new",
+export const Route = createFileRoute("/workspaces/new")({
   component: WorkspacesNewComponent,
 });
 

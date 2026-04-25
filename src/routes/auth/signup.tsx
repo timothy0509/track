@@ -1,5 +1,4 @@
-import { createRoute, redirect } from "@tanstack/react-router";
-import { rootRoute } from "@/routes/__root";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,9 +7,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
-export const authSignupRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "auth/signup",
+export const Route = createFileRoute("/auth/signup")({
   component: SignupPage,
 });
 

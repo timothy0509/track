@@ -1,6 +1,5 @@
 import * as React from "react";
-import { createRoute } from "@tanstack/react-router";
-import { rootRoute } from "./__root";
+import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -86,9 +85,7 @@ const mockMembers: Member[] = [
   },
 ];
 
-export const membersRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/members",
+export const Route = createFileRoute("/members")({
   component: MembersComponent,
 });
 

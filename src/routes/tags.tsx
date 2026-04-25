@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { createRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
-import { rootRoute } from "./__root";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,9 +25,7 @@ import {
 
 const WORKSPACE_ID = "j5793xqk4z8w5q06m40k77q9v70g3j6e" as Id<"workspaces">;
 
-export const tagsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "tags",
+export const Route = createFileRoute("/tags")({
   component: TagsPage,
 });
 
