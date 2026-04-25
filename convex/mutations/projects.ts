@@ -1,9 +1,9 @@
 "use convex";
 
-import { mutation } from "../../_generated/server";
+import { mutation } from "../_generated/server";
 import { v } from "convex/values";
-import { Id } from "../../_generated/dataModel";
-import { requireUser } from "../../lib/auth";
+import { Id } from "../_generated/dataModel";
+import { requireUser } from "../lib/auth";
 
 export const create = mutation({
   args: {

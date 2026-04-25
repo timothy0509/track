@@ -1,4 +1,4 @@
-import { query } from "./_generated/server";
+import { query } from "../_generated/server";
 
 export const getCurrentUser = query({
   handler: async (ctx) => {

@@ -1,6 +1,6 @@
 "use convex";
 
-import { query } from "../../_generated/server";
+import { query } from "../_generated/server";
 import { v } from "convex/values";
 import { getCurrentUserId } from "../lib/auth";
 

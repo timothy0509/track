@@ -1,9 +1,9 @@
 "use convex";
 
-import { query } from "../../_generated/server";
+import { query } from "../_generated/server";
 import { v } from "convex/values";
-import { Id } from "../../_generated/dataModel";
-import { getCurrentUserId } from "../../lib/auth";
+import { Id } from "../_generated/dataModel";
+import { getCurrentUserId } from "../lib/auth";
 
 export const list = query({
   args: {
