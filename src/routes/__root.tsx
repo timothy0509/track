@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import "@/styles/app.css";
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -15,6 +15,7 @@ function RootComponent() {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>TimoTrack</title>
+        <HeadContent />
       </head>
       <body>
         <ConvexClientProvider>
