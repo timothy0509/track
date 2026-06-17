@@ -14,7 +14,9 @@ export default defineConfig({
       },
     }),
     viteReact(),
-    nitro(),
+    nitro({
+      preset: "vercel",
+    }),
   ],
   resolve: {
     alias: {
