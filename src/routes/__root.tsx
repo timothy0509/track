@@ -1,7 +1,8 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import "@/styles/app.css";
 import { AuthProvider } from "@/providers/AuthProvider";
+import { ConvexClientProvider } from "@/providers/ConvexProvider";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -14,11 +15,14 @@ function RootComponent() {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>TimoTrack</title>
+        <HeadContent />
       </head>
       <body>
-        <AuthProvider>
-          <Outlet />
-        </AuthProvider>
+        <ConvexClientProvider>
+          <AuthProvider>
+            <Outlet />
+          </AuthProvider>
+        </ConvexClientProvider>
         {import.meta.env.DEV && <TanStackRouterDevtools />}
       </body>
     </html>
