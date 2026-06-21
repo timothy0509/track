@@ -1,9 +1,10 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/providers/AuthProvider";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -12,11 +13,15 @@ export const Route = createFileRoute("/auth/signup")({
 });
 
 function SignupPage() {
-  const { signup, user } = useAuth();
+  const { user } = useAuth();
+  const { signIn } = useAuthActions();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
 
   if (user) {
     throw redirect({ to: "/timer" });
@@ -25,12 +30,38 @@ function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
     try {
-      await signup(email, password, name);
+      await signIn("password", { email, password, name, flow: "signUp" });
+      setVerificationSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (verificationSent) {
+    return (
+      <AuthLayout
+        title="Check your email"
+        description={`We sent a verification link to ${email}. Click it to activate your account.`}
+      >
+        <div className="space-y-4">
+          <p className="text-center text-sm text-muted-foreground">
+            After verifying, you&apos;ll be prompted to set up two-factor authentication.
+          </p>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => navigate({ to: "/auth/login" })}
+          >
+            Back to Sign In
+          </Button>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout
@@ -69,13 +100,14 @@ function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            minLength={8}
           />
         </div>
         {error && (
           <p className="text-sm text-destructive">{error}</p>
         )}
-        <Button type="submit" className="w-full">
-          Create Account
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Creating account..." : "Create Account"}
         </Button>
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}

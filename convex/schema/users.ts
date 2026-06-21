@@ -9,6 +9,7 @@ export const users = defineTable({
   emailVerified: v.boolean(),
   name: v.string(),
   image: v.optional(v.string()),
+  has2FA: v.optional(v.boolean()),
   timezone: v.string(),
   weekStart: v.union(v.literal("sunday"), v.literal("monday")),
   dateFormat: v.string(),

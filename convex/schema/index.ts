@@ -1,6 +1,7 @@
 "use convex";
 
 import { defineSchema } from "convex/server";
+import { authTables } from "@convex-dev/auth/server";
 import { users } from "./users";
 import { workspaces } from "./workspaces";
 import { workspaceMembers } from "./workspaceMembers";
@@ -16,8 +17,12 @@ import { reports } from "./reports";
 import { workspaceSettings, userSettings } from "./settings";
 import { integrations } from "./integrations";
 import { auditLog } from "./auditLog";
+import { totpCredentials } from "./totpCredentials";
+import { passkeyCredentials } from "./passkeyCredentials";
+import { passkeyChallenges } from "./passkeyChallenges";
 
 export default defineSchema({
+  ...authTables,
   users,
   workspaces,
   workspaceMembers,
@@ -36,4 +41,7 @@ export default defineSchema({
   userSettings,
   integrations,
   auditLog,
+  totpCredentials,
+  passkeyCredentials,
+  passkeyChallenges,
 });
