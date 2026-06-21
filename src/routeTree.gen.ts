@@ -25,6 +25,7 @@ import { Route as TimerCalendarRouteImport } from './routes/timer/calendar'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as AuthSetup2faRouteImport } from './routes/auth/setup-2fa'
 
 const TimerRoute = TimerRouteImport.update({
   id: '/timer',
@@ -106,6 +107,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSetup2faRoute = AuthSetup2faRouteImport.update({
+  id: '/auth/setup-2fa',
+  path: '/auth/setup-2fa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/timer': typeof TimerRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/setup-2fa': typeof AuthSetup2faRoute
   '/auth/signup': typeof AuthSignupRoute
   '/timer/calendar': typeof TimerCalendarRoute
   '/workspaces/new': typeof WorkspacesNewRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/timer': typeof TimerRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/setup-2fa': typeof AuthSetup2faRoute
   '/auth/signup': typeof AuthSignupRoute
   '/timer/calendar': typeof TimerCalendarRoute
   '/workspaces/new': typeof WorkspacesNewRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/timer': typeof TimerRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/setup-2fa': typeof AuthSetup2faRoute
   '/auth/signup': typeof AuthSignupRoute
   '/timer/calendar': typeof TimerCalendarRoute
   '/workspaces/new': typeof WorkspacesNewRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/timer'
     | '/auth/callback'
     | '/auth/login'
+    | '/auth/setup-2fa'
     | '/auth/signup'
     | '/timer/calendar'
     | '/workspaces/new'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/timer'
     | '/auth/callback'
     | '/auth/login'
+    | '/auth/setup-2fa'
     | '/auth/signup'
     | '/timer/calendar'
     | '/workspaces/new'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/timer'
     | '/auth/callback'
     | '/auth/login'
+    | '/auth/setup-2fa'
     | '/auth/signup'
     | '/timer/calendar'
     | '/workspaces/new'
@@ -233,6 +245,7 @@ export interface RootRouteChildren {
   TimerRoute: typeof TimerRouteWithChildren
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthSetup2faRoute: typeof AuthSetup2faRoute
   AuthSignupRoute: typeof AuthSignupRoute
   WorkspacesNewRoute: typeof WorkspacesNewRoute
 }
@@ -351,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/setup-2fa': {
+      id: '/auth/setup-2fa'
+      path: '/auth/setup-2fa'
+      fullPath: '/auth/setup-2fa'
+      preLoaderRoute: typeof AuthSetup2faRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -378,6 +398,7 @@ const rootRouteChildren: RootRouteChildren = {
   TimerRoute: TimerRouteWithChildren,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthLoginRoute: AuthLoginRoute,
+  AuthSetup2faRoute: AuthSetup2faRoute,
   AuthSignupRoute: AuthSignupRoute,
   WorkspacesNewRoute: WorkspacesNewRoute,
 }

@@ -1,19 +1,35 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/providers/AuthProvider";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/auth/callback")({
-  beforeLoad: () => {
-    throw redirect({ to: "/timer" });
-  },
   component: AuthCallbackPage,
 });
 
 function AuthCallbackPage() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (user) {
+      if (user.has2FA) {
+        navigate({ to: "/timer" });
+      } else {
+        navigate({ to: "/auth/setup-2fa" });
+      }
+    } else {
+      navigate({ to: "/auth/login" });
+    }
+  }, [user, loading, navigate]);
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <h1 className="text-xl font-semibold">Redirecting...</h1>
-        <p className="mt-2 text-muted-foreground">
-          Please wait while we complete your authentication.
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto" />
+        <p className="mt-4 text-muted-foreground">
+          Completing authentication...
         </p>
       </div>
     </div>

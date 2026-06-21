@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useAuth } from "@/providers/AuthProvider";
 
 type Role = "admin" | "projectManager" | "user";
 
@@ -8,7 +7,6 @@ interface WorkspaceSettings {
 }
 
 export function useWorkspacePermissions(userRole: Role | null, workspaceSettings?: WorkspaceSettings) {
-  useAuth();
 
   const hasPermission = React.useCallback(
     (requiredRole: Role): boolean => {
