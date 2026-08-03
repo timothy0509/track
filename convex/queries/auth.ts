@@ -9,11 +9,11 @@ export const getCurrentUser = query({
 
     const appUser = await ctx.db
       .query("users")
-      .withIndex("byAuthId", (q) => q.eq("authId", identity.subject))
+      .withIndex("byAuthId", (q) => q.eq("authId", identity.tokenIdentifier))
       .unique();
 
     return {
-      id: identity.subject,
+      id: identity.tokenIdentifier,
       email: identity.email ?? "",
       name: appUser?.name ?? identity.name ?? identity.email?.split("@")[0] ?? "User",
       emailVerified: identity.emailVerified ?? false,
@@ -31,12 +31,12 @@ export const get2FAStatus = query({
 
     const totp = await ctx.db
       .query("totpCredentials")
-      .withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+      .withIndex("byUserId", (q) => q.eq("userId", identity.tokenIdentifier))
       .first();
 
     const passkey = await ctx.db
       .query("passkeyCredentials")
-      .withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+      .withIndex("byUserId", (q) => q.eq("userId", identity.tokenIdentifier))
       .first();
 
     return {

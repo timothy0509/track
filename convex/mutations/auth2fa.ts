@@ -1,5 +1,4 @@
 import { mutation } from "../_generated/server";
-import { v } from "convex/values";
 
 export const check2FARequired = mutation({
   handler: async (ctx) => {
@@ -8,7 +7,7 @@ export const check2FARequired = mutation({
 
     const appUser = await ctx.db
       .query("users")
-      .withIndex("byAuthId", (q) => q.eq("authId", identity.subject))
+      .withIndex("byAuthId", (q) => q.eq("authId", identity.tokenIdentifier))
       .unique();
 
     if (!appUser?.has2FA) {
@@ -17,7 +16,7 @@ export const check2FARequired = mutation({
 
     const totp = await ctx.db
       .query("totpCredentials")
-      .withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+      .withIndex("byUserId", (q) => q.eq("userId", identity.tokenIdentifier))
       .first();
 
     if (totp?.verified) {
@@ -26,7 +25,7 @@ export const check2FARequired = mutation({
 
     const passkey = await ctx.db
       .query("passkeyCredentials")
-      .withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+      .withIndex("byUserId", (q) => q.eq("userId", identity.tokenIdentifier))
       .first();
 
     if (passkey) {

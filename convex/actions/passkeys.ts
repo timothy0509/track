@@ -11,7 +11,7 @@ import {
 import type {
   RegistrationResponseJSON,
   AuthenticationResponseJSON,
-} from "@simplewebauthn/server";
+} from "@simplewebauthn/types";
 import { internal } from "../_generated/api";
 
 const rpName = "TimoTrack";
@@ -28,18 +28,18 @@ export const generateRegistrationOptionsAction = action({
 
     const existingCredentials = await ctx.runQuery(
       internal.queries.passkeys.getByUserId,
-      { userId: identity.subject }
+      { userId: identity.tokenIdentifier }
     );
 
     const options = await generateRegistrationOptions({
       rpName,
       rpID,
-      userID: new TextEncoder().encode(identity.subject),
+      userID: identity.tokenIdentifier,
       userName: identity.email ?? "user",
       userDisplayName: identity.name ?? identity.email ?? "user",
       attestationType: "none",
-      excludeCredentials: existingCredentials.map((cred) => ({
-        id: cred.credentialId,
+      excludeCredentials: existingCredentials.map((cred: { credentialId: string }) => ({
+        id: new TextEncoder().encode(cred.credentialId),
         type: "public-key" as const,
       })),
       authenticatorSelection: {
@@ -51,7 +51,7 @@ export const generateRegistrationOptionsAction = action({
     const challengeId = await ctx.runMutation(
       internal.mutations.passkeys.storeChallenge,
       {
-        userId: identity.subject,
+        userId: identity.tokenIdentifier,
         challenge: options.challenge,
         type: "registration",
       }
@@ -73,9 +73,9 @@ export const verifyRegistrationAction = action({
     const challengeDoc = await ctx.runQuery(
       internal.queries.passkeys.getChallenge,
       { challengeId: args.challengeId }
-    );
+    ) as { userId: string; challenge: string } | null;
 
-    if (!challengeDoc || challengeDoc.userId !== identity.subject) {
+    if (!challengeDoc || challengeDoc.userId !== identity.tokenIdentifier) {
       throw new Error("Invalid challenge");
     }
 
@@ -90,13 +90,13 @@ export const verifyRegistrationAction = action({
       throw new Error("Registration verification failed");
     }
 
-    const { credential } = verification.registrationInfo;
+    const { credentialID, credentialPublicKey } = verification.registrationInfo;
 
     await ctx.runMutation(internal.mutations.passkeys.storeCredential, {
-      userId: identity.subject,
-      credentialId: credential.id,
-      publicKey: credential.publicKey,
-      counter: BigInt(credential.counter),
+      userId: identity.tokenIdentifier,
+      credentialId: Buffer.from(credentialID).toString("base64url"),
+      publicKey: credentialPublicKey.buffer as ArrayBuffer,
+      counter: BigInt(verification.registrationInfo.counter),
     });
 
     await ctx.runMutation(internal.mutations.passkeys.deleteChallenge, {
@@ -104,7 +104,7 @@ export const verifyRegistrationAction = action({
     });
 
     const appUser = await ctx.runQuery(internal.queries.passkeys.getAppUser, {
-      authId: identity.subject,
+      authId: identity.tokenIdentifier,
     });
 
     if (appUser) {
@@ -128,13 +128,13 @@ export const generateAuthenticationOptionsAction = action({
 
     const credentials = await ctx.runQuery(
       internal.queries.passkeys.getByUserId,
-      { userId: identity.subject }
+      { userId: identity.tokenIdentifier }
     );
 
     const options = await generateAuthenticationOptions({
       rpID,
-      allowCredentials: credentials.map((cred) => ({
-        id: cred.credentialId,
+      allowCredentials: credentials.map((cred: { credentialId: string }) => ({
+        id: new TextEncoder().encode(cred.credentialId),
         type: "public-key" as const,
       })),
       userVerification: "preferred",
@@ -143,7 +143,7 @@ export const generateAuthenticationOptionsAction = action({
     const challengeId = await ctx.runMutation(
       internal.mutations.passkeys.storeChallenge,
       {
-        userId: identity.subject,
+        userId: identity.tokenIdentifier,
         challenge: options.challenge,
         type: "authentication",
       }
@@ -165,9 +165,9 @@ export const verifyAuthenticationAction = action({
     const challengeDoc = await ctx.runQuery(
       internal.queries.passkeys.getChallenge,
       { challengeId: args.challengeId }
-    );
+    ) as { userId: string; challenge: string } | null;
 
-    if (!challengeDoc || challengeDoc.userId !== identity.subject) {
+    if (!challengeDoc || challengeDoc.userId !== identity.tokenIdentifier) {
       throw new Error("Invalid challenge");
     }
 
@@ -187,9 +187,9 @@ export const verifyAuthenticationAction = action({
       expectedChallenge: challengeDoc.challenge,
       expectedOrigin: origin,
       expectedRPID: rpID,
-      credential: {
-        id: credential.credentialId,
-        publicKey: new Uint8Array(credential.publicKey),
+      authenticator: {
+        credentialID: new TextEncoder().encode(credential.credentialId),
+        credentialPublicKey: new Uint8Array(credential.publicKey),
         counter: Number(credential.counter),
       },
     });

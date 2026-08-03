@@ -30,16 +30,20 @@ export function TimerInput({
   const [localDescription, setLocalDescription] = useState(timer.description);
 
   const handleStart = async () => {
-    if (timer.isRunning) {
-      await timer.stop();
-    } else {
-      await timer.start({
-        description: localDescription || undefined,
-        projectId: timer.projectId,
-        taskId: timer.taskId,
-        tagIds: timer.tagIds,
-        billable: timer.billable,
-      });
+    try {
+      if (timer.isRunning) {
+        await timer.stop();
+      } else {
+        await timer.start({
+          description: localDescription || undefined,
+          projectId: timer.projectId,
+          taskId: timer.taskId,
+          tagIds: timer.tagIds,
+          billable: timer.billable,
+        });
+      }
+    } catch (error) {
+      console.error("Timer error:", error);
     }
   };
 

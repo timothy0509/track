@@ -10,26 +10,34 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TimerRouteImport } from './routes/timer'
+import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as TagsRouteImport } from './routes/tags'
 import { Route as SharedRouteImport } from './routes/shared'
+import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MembersRouteImport } from './routes/members'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as EntriesRouteImport } from './routes/entries'
 import { Route as ClientsRouteImport } from './routes/clients'
+import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkspacesNewRouteImport } from './routes/workspaces/new'
 import { Route as TimerCalendarRouteImport } from './routes/timer/calendar'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as AuthSetup2faRouteImport } from './routes/auth/setup-2fa'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
-import { Route as AuthSetup2faRouteImport } from './routes/auth/setup-2fa'
 
 const TimerRoute = TimerRouteImport.update({
   id: '/timer',
   path: '/timer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamsRoute = TeamsRouteImport.update({
+  id: '/teams',
+  path: '/teams',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TasksRoute = TasksRouteImport.update({
@@ -45,6 +53,11 @@ const TagsRoute = TagsRouteImport.update({
 const SharedRoute = SharedRouteImport.update({
   id: '/shared',
   path: '/shared',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsRoute = ProjectsRouteImport.update({
@@ -77,6 +90,11 @@ const ClientsRoute = ClientsRouteImport.update({
   path: '/clients',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -97,6 +115,11 @@ const AuthSignupRoute = AuthSignupRouteImport.update({
   path: '/auth/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSetup2faRoute = AuthSetup2faRouteImport.update({
+  id: '/auth/setup-2fa',
+  path: '/auth/setup-2fa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
@@ -107,23 +130,21 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthSetup2faRoute = AuthSetup2faRouteImport.update({
-  id: '/auth/setup-2fa',
-  path: '/auth/setup-2fa',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
   '/clients': typeof ClientsRoute
   '/entries': typeof EntriesRoute
   '/favorites': typeof FavoritesRoute
   '/members': typeof MembersRoute
   '/onboarding': typeof OnboardingRoute
   '/projects': typeof ProjectsRoute
+  '/reports': typeof ReportsRoute
   '/shared': typeof SharedRoute
   '/tags': typeof TagsRoute
   '/tasks': typeof TasksRoute
+  '/teams': typeof TeamsRoute
   '/timer': typeof TimerRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
@@ -134,15 +155,18 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
   '/clients': typeof ClientsRoute
   '/entries': typeof EntriesRoute
   '/favorites': typeof FavoritesRoute
   '/members': typeof MembersRoute
   '/onboarding': typeof OnboardingRoute
   '/projects': typeof ProjectsRoute
+  '/reports': typeof ReportsRoute
   '/shared': typeof SharedRoute
   '/tags': typeof TagsRoute
   '/tasks': typeof TasksRoute
+  '/teams': typeof TeamsRoute
   '/timer': typeof TimerRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
@@ -154,15 +178,18 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
   '/clients': typeof ClientsRoute
   '/entries': typeof EntriesRoute
   '/favorites': typeof FavoritesRoute
   '/members': typeof MembersRoute
   '/onboarding': typeof OnboardingRoute
   '/projects': typeof ProjectsRoute
+  '/reports': typeof ReportsRoute
   '/shared': typeof SharedRoute
   '/tags': typeof TagsRoute
   '/tasks': typeof TasksRoute
+  '/teams': typeof TeamsRoute
   '/timer': typeof TimerRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/login': typeof AuthLoginRoute
@@ -175,15 +202,18 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/calendar'
     | '/clients'
     | '/entries'
     | '/favorites'
     | '/members'
     | '/onboarding'
     | '/projects'
+    | '/reports'
     | '/shared'
     | '/tags'
     | '/tasks'
+    | '/teams'
     | '/timer'
     | '/auth/callback'
     | '/auth/login'
@@ -194,15 +224,18 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/calendar'
     | '/clients'
     | '/entries'
     | '/favorites'
     | '/members'
     | '/onboarding'
     | '/projects'
+    | '/reports'
     | '/shared'
     | '/tags'
     | '/tasks'
+    | '/teams'
     | '/timer'
     | '/auth/callback'
     | '/auth/login'
@@ -213,15 +246,18 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/calendar'
     | '/clients'
     | '/entries'
     | '/favorites'
     | '/members'
     | '/onboarding'
     | '/projects'
+    | '/reports'
     | '/shared'
     | '/tags'
     | '/tasks'
+    | '/teams'
     | '/timer'
     | '/auth/callback'
     | '/auth/login'
@@ -233,15 +269,18 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalendarRoute: typeof CalendarRoute
   ClientsRoute: typeof ClientsRoute
   EntriesRoute: typeof EntriesRoute
   FavoritesRoute: typeof FavoritesRoute
   MembersRoute: typeof MembersRoute
   OnboardingRoute: typeof OnboardingRoute
   ProjectsRoute: typeof ProjectsRoute
+  ReportsRoute: typeof ReportsRoute
   SharedRoute: typeof SharedRoute
   TagsRoute: typeof TagsRoute
   TasksRoute: typeof TasksRoute
+  TeamsRoute: typeof TeamsRoute
   TimerRoute: typeof TimerRouteWithChildren
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthLoginRoute: typeof AuthLoginRoute
@@ -257,6 +296,13 @@ declare module '@tanstack/react-router' {
       path: '/timer'
       fullPath: '/timer'
       preLoaderRoute: typeof TimerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teams': {
+      id: '/teams'
+      path: '/teams'
+      fullPath: '/teams'
+      preLoaderRoute: typeof TeamsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tasks': {
@@ -278,6 +324,13 @@ declare module '@tanstack/react-router' {
       path: '/shared'
       fullPath: '/shared'
       preLoaderRoute: typeof SharedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects': {
@@ -322,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -350,6 +410,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/setup-2fa': {
+      id: '/auth/setup-2fa'
+      path: '/auth/setup-2fa'
+      fullPath: '/auth/setup-2fa'
+      preLoaderRoute: typeof AuthSetup2faRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/login': {
       id: '/auth/login'
       path: '/auth/login'
@@ -362,13 +429,6 @@ declare module '@tanstack/react-router' {
       path: '/auth/callback'
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/setup-2fa': {
-      id: '/auth/setup-2fa'
-      path: '/auth/setup-2fa'
-      fullPath: '/auth/setup-2fa'
-      preLoaderRoute: typeof AuthSetup2faRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -386,15 +446,18 @@ const TimerRouteWithChildren = TimerRoute._addFileChildren(TimerRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalendarRoute: CalendarRoute,
   ClientsRoute: ClientsRoute,
   EntriesRoute: EntriesRoute,
   FavoritesRoute: FavoritesRoute,
   MembersRoute: MembersRoute,
   OnboardingRoute: OnboardingRoute,
   ProjectsRoute: ProjectsRoute,
+  ReportsRoute: ReportsRoute,
   SharedRoute: SharedRoute,
   TagsRoute: TagsRoute,
   TasksRoute: TasksRoute,
+  TeamsRoute: TeamsRoute,
   TimerRoute: TimerRouteWithChildren,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthLoginRoute: AuthLoginRoute,

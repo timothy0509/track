@@ -83,16 +83,20 @@ function TimerPage() {
       endDateTime.setDate(endDateTime.getDate() + 1);
     }
 
-    await createEntry({
-      workspaceId,
-      description: entry.description || undefined,
-      projectId: entry.projectId,
-      taskId: entry.taskId,
-      tagIds: entry.tagIds.length > 0 ? entry.tagIds : undefined,
-      startTime: startDateTime.getTime(),
-      endTime: endDateTime.getTime(),
-      billable: entry.billable,
-    });
+    try {
+      await createEntry({
+        workspaceId,
+        description: entry.description || undefined,
+        projectId: entry.projectId,
+        taskId: entry.taskId,
+        tagIds: entry.tagIds.length > 0 ? entry.tagIds : undefined,
+        startTime: startDateTime.getTime(),
+        endTime: endDateTime.getTime(),
+        billable: entry.billable,
+      });
+    } catch (error) {
+      console.error("Failed to create entry:", error);
+    }
   };
 
   const handleDelete = async (id: Id<"timeEntries">) => {

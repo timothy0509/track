@@ -13,7 +13,7 @@ export const sendVerificationEmail = action({
     email: v.string(),
     code: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     if (!resend) {
       console.warn("AUTH_RESEND_KEY not set — skipping email send");
       console.log(`[DEV] Verification code for ${args.email}: ${args.code}`);

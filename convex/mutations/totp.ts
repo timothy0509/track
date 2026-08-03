@@ -1,4 +1,4 @@
-import { mutation, query } from "../_generated/server";
+import { mutation } from "../_generated/server";
 import { v } from "convex/values";
 import { TOTP } from "otpauth";
 
@@ -9,7 +9,7 @@ export const generateSecret = mutation({
 
     const existing = await ctx.db
       .query("totpCredentials")
-      .withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+      .withIndex("byUserId", (q) => q.eq("userId", identity.tokenIdentifier))
       .first();
 
     if (existing?.verified) {
@@ -31,7 +31,7 @@ export const generateSecret = mutation({
     const secret = totp.secret.base32;
 
     await ctx.db.insert("totpCredentials", {
-      userId: identity.subject,
+      userId: identity.tokenIdentifier,
       secret,
       verified: false,
     });
@@ -51,7 +51,7 @@ export const verify = mutation({
 
     const credential = await ctx.db
       .query("totpCredentials")
-      .withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+      .withIndex("byUserId", (q) => q.eq("userId", identity.tokenIdentifier))
       .first();
 
     if (!credential) throw new Error("No TOTP credential found");
@@ -74,7 +74,7 @@ export const verify = mutation({
 
     const appUser = await ctx.db
       .query("users")
-      .withIndex("byAuthId", (q) => q.eq("authId", identity.subject))
+      .withIndex("byAuthId", (q) => q.eq("authId", identity.tokenIdentifier))
       .unique();
 
     if (appUser) {
@@ -93,7 +93,7 @@ export const verifyLogin = mutation({
 
     const credential = await ctx.db
       .query("totpCredentials")
-      .withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+      .withIndex("byUserId", (q) => q.eq("userId", identity.tokenIdentifier))
       .first();
 
     if (!credential?.verified) {
@@ -125,7 +125,7 @@ export const remove = mutation({
 
     const credential = await ctx.db
       .query("totpCredentials")
-      .withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+      .withIndex("byUserId", (q) => q.eq("userId", identity.tokenIdentifier))
       .first();
 
     if (credential) {
@@ -134,12 +134,12 @@ export const remove = mutation({
 
     const passkey = await ctx.db
       .query("passkeyCredentials")
-      .withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+      .withIndex("byUserId", (q) => q.eq("userId", identity.tokenIdentifier))
       .first();
 
     const appUser = await ctx.db
       .query("users")
-      .withIndex("byAuthId", (q) => q.eq("authId", identity.subject))
+      .withIndex("byAuthId", (q) => q.eq("authId", identity.tokenIdentifier))
       .unique();
 
     if (appUser && !passkey) {
